@@ -29,6 +29,7 @@ use OutOfBoundsException;
 class IntegerPair {
 
     const MAX_32BIT_INTEGER_VALUE = 2147483647;
+    const MASK_32BIT = 0x00000000ffffffff;
 
     protected $integer32bitA = 0;
     protected $integer32bitB = 0;
@@ -45,17 +46,14 @@ class IntegerPair {
         if (PHP_INT_SIZE < 8 || PHP_INT_MAX<=static::MAX_32BIT_INTEGER_VALUE) {
             throw new RuntimeException("Your system doesn't support 64bit integers");
         }
-        if ($integer32bitA>static::MAX_32BIT_INTEGER_VALUE || $integer32bitA<-static::MAX_32BIT_INTEGER_VALUE ) {
-            // Out of bounds
-            throw new OutOfBoundsException("IntegerA exceeds the 32bit range: [-".static::MAX_32BIT_INTEGER_VALUE." to ".static::MAX_32BIT_INTEGER_VALUE."]");
-        }
-        if ($integer32bitB>static::MAX_32BIT_INTEGER_VALUE || $integer32bitB<-static::MAX_32BIT_INTEGER_VALUE ) {
-            // Out of bounds
-            throw new OutOfBoundsException("IntegerB exceeds the 32bit range: [-".static::MAX_32BIT_INTEGER_VALUE." to ".static::MAX_32BIT_INTEGER_VALUE."]");
+        foreach (array("A","B") as $intNum) {
+            if (${"integer32bit".$intNum} > static::MAX_32BIT_INTEGER_VALUE || ${"integer32bit".$intNum} < -static::MAX_32BIT_INTEGER_VALUE) {
+                throw new OutOfBoundsException("Integer".$intNum." exceeds the 32bit range [0 to " . static::MAX_32BIT_INTEGER_VALUE . "]: ".${"integer32bit".$intNum}." provided");
+            }
         }
         $this->integer32bitA = $integer32bitA;
         $this->integer32bitB = $integer32bitB;
-        $this->integer64bit = bindec(decbin(($integer32bitA<<32) | $integer32bitB));
+        $this->integer64bit = $integer32bitA<<32 | $integer32bitB;
     }
 
     /**
@@ -64,14 +62,8 @@ class IntegerPair {
      * @return IntegerPair
      */
     public static function unpack($integer64bit) {
-        $binaryString = decbin($integer64bit);
-        $binaryStringLength = strlen($binaryString);
-        if ($binaryStringLength>32) {
-            $integer32bitA = bindec(substr($binaryString, 0, $binaryStringLength-32));
-        } else {
-            $integer32bitA = 0;
-        }
-        $integer32bitB = bindec(substr($binaryString,-32));
+        $integer32bitA = $integer64bit>>32 & self::MASK_32BIT;
+        $integer32bitB = $integer64bit & self::MASK_32BIT;
         return new IntegerPair($integer32bitA, $integer32bitB);
     }
 
@@ -84,7 +76,7 @@ class IntegerPair {
     }
 
     /**
-     * Returns the 32bit A integer   (it's really a 64bit one)
+     * Returns the 32bit B integer   (it's really a 64bit one)
      * @return int
      */
     public function getIntegerB() {
