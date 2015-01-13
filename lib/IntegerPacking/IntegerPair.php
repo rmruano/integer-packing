@@ -1,6 +1,6 @@
 <?php
 
-namespace Rmruano;
+namespace IntegerPacking;
 
 use RuntimeException;
 use OutOfBoundsException;
@@ -13,17 +13,17 @@ use OutOfBoundsException;
  *
  * DEMO USAGE
  *      From 2 32bit integers:
- *          $integerPair = new \Rmruano\IntegerPair(20,30);
+ *          $integerPair = new \IntegerPacking\IntegerPair(20,30);
  *          echo $integerPair->get64bitInteger(); // prints the 64 bit integer that combines the 2 32bit integers
  *
  *      From 1 64bit integer:
- *          $integerPair = \Rmruano\IntegerPair::unpack( 85899345950 );
+ *          $integerPair = \IntegerPacking\IntegerPair::unpack( 85899345950 );
  *          echo "A: ".$integerPair->getIntegerA()." - B: ".$integerPair->getIntegerB();
  *
  * NOTICE: Your system must support 64bit integers (PHP_INT_SIZE === 8)
  *
  * @author http://www.github.com/rmruano
- * @license https://raw.githubusercontent.com/rmruano/PHPIntegerPair/master/LICENSE
+ * @license https://raw.githubusercontent.com/rmruano/integer-packing/master/LICENSE
  * @package Rmruano
  */
 class IntegerPair {
@@ -48,7 +48,8 @@ class IntegerPair {
         }
         foreach (array("A","B") as $intNum) {
             if (${"integer32bit".$intNum} > static::MAX_32BIT_INTEGER_VALUE || ${"integer32bit".$intNum} < -static::MAX_32BIT_INTEGER_VALUE) {
-                throw new OutOfBoundsException("Integer".$intNum." exceeds the 32bit range [0 to " . static::MAX_32BIT_INTEGER_VALUE . "]: ".${"integer32bit".$intNum}." provided");
+                throw new OutOfBoundsException("Integer".$intNum." exceeds the 32bit range [0 to " .
+                    static::MAX_32BIT_INTEGER_VALUE . "]: ".${"integer32bit".$intNum}." provided");
             }
         }
         $this->integer32bitA = $integer32bitA;

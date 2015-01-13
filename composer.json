@@ -1,0 +1,31 @@
+{
+  "name": "rmruano/integer-packing",
+  "description": "Integer Packing library allows two 32bit or four 16bit integers to be packed into a single 64bit integer and vice-versa.",
+  "keywords": ["integer","pack"],
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Rubén Moraleda",
+      "homepage": "http://github.com/rmruano"
+    }
+  ],
+  "require": {
+    "php": ">=5.3"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.1.*",
+    "satooshi/php-coveralls": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "IntegerPacking\\": "lib/IntegerPacking/",
+      "IntegerPacking\\Test\\": "test/lib/IntegerPacking/Test/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0.x-dev"
+    }
+  }
+}

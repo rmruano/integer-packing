@@ -1,6 +1,6 @@
 <?php
 
-namespace Rmruano;
+namespace IntegerPacking;
 
 use RuntimeException;
 use OutOfBoundsException;
@@ -13,11 +13,11 @@ use OutOfBoundsException;
  *
  * DEMO USAGE
  *      From 3 16bit integers:
- *          $integerQuartet = new \Rmruano\IntegerQuartet(20,30,40,50);
+ *          $integerQuartet = new \IntegerPacking\IntegerQuartet(20,30,40,50);
  *          echo $integerQuartet->get64bitInteger(); // prints the 64 bit integer that combines the 4 16bit integers
  *
  *      From 1 64bit integer:
- *          $integerQuartet = \Rmruano\IntegerQuartet::unpack( 5629628385853490 );
+ *          $integerQuartet = \IntegerPacking\IntegerQuartet::unpack( 5629628385853490 );
  *          echo "A: ".$integerQuartet->getIntegerA()." - B: ".$integerQuartet->getIntegerB()." - C: ".$integerQuartet->getIntegerC()." - D: ".$integerQuartet->getIntegerD();
  *
  * NOTICE: Your system must support 64bit integers (PHP_INT_SIZE === 8)
@@ -52,7 +52,8 @@ class IntegerQuartet {
         }
         foreach (array("A","B","C","D") as $intNum) {
             if (${"integer16bit".$intNum} > static::MAX_16BIT_INTEGER_VALUE || ${"integer16bit".$intNum} < 0) {
-                throw new OutOfBoundsException("Integer".$intNum." exceeds the 16bit range [0 to " . static::MAX_16BIT_INTEGER_VALUE . "]: ".${"integer16bit".$intNum}." provided");
+                throw new OutOfBoundsException("Integer".$intNum." exceeds the 16bit range [0 to " .
+                    static::MAX_16BIT_INTEGER_VALUE . "]: ".${"integer16bit".$intNum}." provided");
             }
         }
         $this->integer16bitA = $integer16bitA;
