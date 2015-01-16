@@ -4,6 +4,7 @@ namespace IntegerPacking;
 
 use RuntimeException;
 use OutOfBoundsException;
+use InvalidArgumentException;
 
 /**
  * Class IntegerQuartet
@@ -12,7 +13,7 @@ use OutOfBoundsException;
  * that can be represented with 16bits).
  *
  * DEMO USAGE
- *      From 3 16bit integers:
+ *      From 4 16bit integers:
  *          $integerQuartet = new \IntegerPacking\IntegerQuartet(20,30,40,50);
  *          echo $integerQuartet->get64bitInteger(); // prints the 64 bit integer that combines the 4 16bit integers
  *
@@ -26,16 +27,14 @@ use OutOfBoundsException;
  * @license https://raw.githubusercontent.com/rmruano/PHPIntegerQuartet/master/LICENSE
  * @package Rmruano
  */
-class IntegerQuartet {
+class IntegerQuartet extends IntegerBase {
 
-    const MAX_16BIT_INTEGER_VALUE = 32767;
     const MASK_16BIT = 0x000000000000ffff;
 
     protected $integer16bitA = 0;
     protected $integer16bitB = 0;
     protected $integer16bitC = 0;
     protected $integer16bitD = 0;
-    protected $integer64bit = 0;
 
     /**
      * Packs 2 16bit integers into one 64bit integer
@@ -45,12 +44,14 @@ class IntegerQuartet {
      * @param $integer16bitD    16bit integer   (it's really a 64bit one)
      * @throws OutOfBoundsException parameters exceeds the capacity of a 16bit integer
      * @throws RuntimeException unsupported
+     * @throws InvalidArgumentException invalid arguments
      */
     public function __construct($integer16bitA, $integer16bitB, $integer16bitC, $integer16bitD) {
-        if (PHP_INT_SIZE < 8 || PHP_INT_MAX<=static::MAX_16BIT_INTEGER_VALUE) {
-            throw new RuntimeException("Your system doesn't support 64bit integers");
-        }
+        $this->force64BitIntegers();
         foreach (array("A","B","C","D") as $intNum) {
+            if (!is_numeric(${"integer16bit".$intNum}) || is_float(${"integer16bit".$intNum})) {
+                throw new InvalidArgumentException("Integer".$intNum." it's not a valid integer number");
+            }
             if (${"integer16bit".$intNum} > static::MAX_16BIT_INTEGER_VALUE || ${"integer16bit".$intNum} < 0) {
                 throw new OutOfBoundsException("Integer".$intNum." exceeds the 16bit range [0 to " .
                     static::MAX_16BIT_INTEGER_VALUE . "]: ".${"integer16bit".$intNum}." provided");
@@ -106,14 +107,6 @@ class IntegerQuartet {
      */
     public function getIntegerD() {
         return $this->integer16bitD;
-    }
-
-    /**
-     * Returns the 64bit packed integer
-     * @return int
-     */
-    public function get64bitInteger() {
-        return $this->integer64bit;
     }
 
 }
