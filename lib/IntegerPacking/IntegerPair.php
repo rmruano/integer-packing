@@ -4,6 +4,7 @@ namespace IntegerPacking;
 
 use RuntimeException;
 use OutOfBoundsException;
+use InvalidArgumentException;
 
 /**
  * Class IntegerPair
@@ -26,14 +27,12 @@ use OutOfBoundsException;
  * @license https://raw.githubusercontent.com/rmruano/integer-packing/master/LICENSE
  * @package Rmruano
  */
-class IntegerPair {
+class IntegerPair extends IntegerBase {
 
-    const MAX_32BIT_INTEGER_VALUE = 2147483647;
     const MASK_32BIT = 0x00000000ffffffff;
 
     protected $integer32bitA = 0;
     protected $integer32bitB = 0;
-    protected $integer64bit = 0;
 
     /**
      * Packs 2 32bit integers into one 64bit integer
@@ -41,14 +40,16 @@ class IntegerPair {
      * @param $integer32bitB    32bit integer   (it's really a 64bit one)
      * @throws OutOfBoundsException parameters exceeds the capacity of a 32bit integer
      * @throws RuntimeException unsupported
+     * @throws InvalidArgumentException invalid arguments
      */
     public function __construct($integer32bitA, $integer32bitB) {
-        if (PHP_INT_SIZE < 8 || PHP_INT_MAX<=static::MAX_32BIT_INTEGER_VALUE) {
-            throw new RuntimeException("Your system doesn't support 64bit integers");
-        }
+        $this->force64BitIntegers();
         foreach (array("A","B") as $intNum) {
-            if (${"integer32bit".$intNum} > static::MAX_32BIT_INTEGER_VALUE || ${"integer32bit".$intNum} < -static::MAX_32BIT_INTEGER_VALUE) {
-                throw new OutOfBoundsException("Integer".$intNum." exceeds the 32bit range [0 to " .
+            if (!is_numeric(${"integer32bit".$intNum}) || is_float(${"integer32bit".$intNum})) {
+                throw new InvalidArgumentException("Integer".$intNum." it's not a valid integer number");
+            }
+            if (${"integer32bit".$intNum} > static::MAX_32BIT_INTEGER_VALUE || ${"integer32bit".$intNum} < -(static::MAX_32BIT_INTEGER_VALUE+1)) {
+                throw new OutOfBoundsException("Integer".$intNum." exceeds the 32bit range [".-(static::MAX_32BIT_INTEGER_VALUE+1)." to " .
                     static::MAX_32BIT_INTEGER_VALUE . "]: ".${"integer32bit".$intNum}." provided");
             }
         }
@@ -82,14 +83,6 @@ class IntegerPair {
      */
     public function getIntegerB() {
         return $this->integer32bitB;
-    }
-
-    /**
-     * Returns the 64bit packed integer
-     * @return int
-     */
-    public function get64bitInteger() {
-        return $this->integer64bit;
     }
 
 }
